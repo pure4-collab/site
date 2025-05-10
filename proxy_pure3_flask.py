@@ -1,15 +1,3 @@
-
-from flask import Flask, request, jsonify, render_template
-import requests
-from bs4 import BeautifulSoup
-import os
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
 @app.route('/api/relatorio', methods=['GET'])
 def pegar_dados():
     wallet = request.args.get('wallet')
@@ -17,9 +5,7 @@ def pegar_dados():
         return jsonify({"error": "Wallet address not provided"}), 400
 
     url = f"https://pure3.cloud/report/{wallet}"
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    headers = { "User-Agent": "Mozilla/5.0" }
 
     try:
         resp = requests.get(url, headers=headers, timeout=10)
@@ -27,20 +13,16 @@ def pegar_dados():
 
         dados = {}
 
-        saldo_atual = soup.find(text="Current Balance").find_next("span").text.strip()
-        lucro_diario = soup.find(text="Today's ROI").find_next("span").text.strip()
-        total_payouts = soup.find(text="Payouts").find_next("span").text.strip()
+        def safe_extract(label):
+            el = soup.find(text=label)
+            return el.find_next("span").text.strip() if el else None
 
-        dados['current_balance'] = saldo_atual
-        dados['daily_roi'] = lucro_diario
-        dados['total_payouts'] = total_payouts
+        dados['current_balance'] = safe_extract("Current Balance")
+        dados['daily_roi'] = safe_extract("Today's ROI")
+        dados['total_payouts'] = safe_extract("Payouts")
         dados['source'] = url
 
         return jsonify(dados)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
