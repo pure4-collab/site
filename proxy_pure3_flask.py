@@ -33,7 +33,7 @@ def pegar_dados():
         # ROI Hoje (pega o <p class="roi"> e extrai os valores de texto)
         roi_tag = soup.find("p", class_="roi")
         if roi_tag:
-            roi_text = roi_tag.get_text(strip=True)
+            roi_text = ' '.join(roi_tag.stripped_strings)
             dados['daily_roi'] = roi_text.replace("Today's ROI:", "").strip()
         else:
             dados['daily_roi'] = None
