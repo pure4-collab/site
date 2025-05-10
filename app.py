@@ -55,3 +55,37 @@ def api_relatorio():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/api/deposit_address")
+def gerar_endereco_deposito():
+    wallet = request.args.get("wallet")
+    if not wallet:
+        return jsonify({"error": "Carteira não informada"}), 400
+
+    try:
+        session = requests.Session()
+        session.headers.update({
+            "Referer": f"https://pure3.cloud/report/{wallet}",
+            "User-Agent": "Mozilla/5.0"
+        })
+        session.get(f"https://pure3.cloud/report/{wallet}")
+
+        res = session.post("https://pure3.cloud/ajax/index.php", data={
+            "endpoint": "offset",
+            "w": "1329",
+            "h": "1174"
+        })
+
+        soup = BeautifulSoup(res.text, "html.parser")
+        address = soup.select_one(".place_for_address")
+        countdown = soup.select_one(".clock")
+        min_start = soup.find("p", class_="min")
+
+        return jsonify({
+            "address": address.text.strip() if address else None,
+            "min_start": min_start.text.strip() if min_start else None,
+            "timer": countdown.text.strip() if countdown else None
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
