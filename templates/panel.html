@@ -120,20 +120,20 @@
 <script>
 const wallet = localStorage.getItem("wallet_trx");
 if (!wallet) {
-  alert("Nenhum endereço TRX encontrado. Retornando à página inicial.");
+  alert("Carteira TRX não encontrada. Voltando para início.");
   window.location.href = "/";
 }
 
 fetch("/api/relatorio?wallet=" + wallet)
   .then(res => res.json())
   .then(d => {
-    if (d.error) {
-      alert("Erro: " + d.error);
-      return;
-    }
     document.getElementById("currentBalance").innerText = d.current_balance || "---";
-    document.getElementById("payouts").innerText = d.total_payouts || "---";
+    document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
     document.getElementById("refRewards").innerText = d.ref_rewards || "---";
+    // Você pode adicionar mais campos se quiser
+  })
+  .catch(() => {
+    alert("Erro ao buscar dados da carteira.");
   });
 </script>
 </body>
