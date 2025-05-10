@@ -148,7 +148,7 @@
   </div>
   <div class="card">
     <h3>Payouts</h3>
-    <p id="payouts">---</p>
+    <p id="total_payouts">---</p>
     <p style="font-size:13px;">Ref Rewards: <span id="refRewards">---</span></p>
   </div>
 </div>
@@ -183,6 +183,7 @@ window.onload = () => {
     .then(res => res.json())
     .then(d => {
       document.getElementById("currentBalance").innerText = d.current_balance || "---";
+      document.getElementById("miningBalance").innerText = d.miningBalance || "---";
       document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
       document.getElementById("miningBalance").innerText = "1,437.34 TRX"; // valor visual placeholder
     });
