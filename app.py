@@ -1,7 +1,7 @@
-
 from flask import Flask, render_template, request, jsonify
 import requests
 from bs4 import BeautifulSoup
+import re
 
 app = Flask(__name__)
 
@@ -32,15 +32,35 @@ def api_relatorio():
             items = soup.select(selector)
             result = []
             for i in items:
-                trx_text = i.select_one("span").text if i.select_one("span") else ""
+                text = i.get_text(strip=True)
                 a_tag = i.select_one("a")
-                if a_tag:
+                span_trx = i.select_one("span")
+                # Caso com link de transação
+                if a_tag and span_trx:
+                    date_part = text.split(" - Payment made:")[0]
+                    trx = span_trx.get_text(strip=True)
                     link = a_tag.get("href")
-                    hash_text = a_tag.text
-                    full = i.text.split("-")[0].strip()
-                    result.append(f'<p>{full} - Payment made: <span>{trx_text}</span> - <a href="{link}" target="_blank">{hash_text}</a></p>')
+                    hash_text = a_tag.get_text(strip=True)
+                    usd_match = re.search(r"/\s*(\$[\d\.]+)", text)
+                    usd = usd_match.group(1) if usd_match else ""
+                    result.append(
+                        f'<p>{date_part} - Payment made: <span>{trx}</span>'
+                        + (f' / {usd}' if usd else '')
+                        + f' - <a href="{link}" target="_blank">{hash_text}</a></p>'
+                    )
                 else:
-                    result.append(f'<p>{i.text}</p>')
+                    # Caso sem link (ex: In queue)
+                    m = re.match(
+                        r'(.+?) - Payment made:\s*([\d\.]+\s*TRX)\s*/\s*(\$[\d\.]+)\s*-\s*(.+)',
+                        text
+                    )
+                    if m:
+                        date_part, trx_val, usd_val, status = m.groups()
+                        result.append(
+                            f'<p>{date_part} - Payment made: <span>{trx_val}</span> / {usd_val} - {status}</p>'
+                        )
+                    else:
+                        result.append(f'<p>{text}</p>')
             return result
 
         data = {
@@ -95,7 +115,6 @@ def gerar_endereco_deposito():
             "min_start": min_start.text.strip() if min_start else None,
             "timer": countdown.text.strip() if countdown else None
         })
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
