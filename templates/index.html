@@ -180,6 +180,16 @@ function buscar() {
     });
 }
 </script>
-
+<script>
+function buscar() {
+  const wallet = document.getElementById("walletInput").value.trim();
+  if (!wallet) {
+    alert("Por favor, insira seu endereço TRX.");
+    return;
+  }
+  localStorage.setItem("wallet_trx", wallet);
+  window.location.href = "/painel";
+}
+</script>
 </body>
 </html>
