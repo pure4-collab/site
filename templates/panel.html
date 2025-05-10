@@ -13,7 +13,7 @@
     }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif" ;
       background: var(--background);
       color: #111827;
       margin: 0;
@@ -66,8 +66,19 @@
       flex: 1 1 30%;
       background: var(--light);
       padding: 20px;
+	
       border-radius: 12px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+	  
+	  .indicacao{
+       border-radius: 12px;
+		  padding-top: 20px;
+		  padding-right: 20px;
+	  text-align: right;
+	  flex-wrap: wrap;
+	  font-size: 14px;
+
     }
 
     .card h3 {
@@ -82,11 +93,11 @@
     }
 
     .history {
-      flex: 1 1 48%;
+      flex: 1 1 20%;
       background: var(--light);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
     .history h4 {
@@ -130,21 +141,33 @@
 </head>
 <body>
 
-<div class="loader" id="loader">Carregando dados da blockchain...</div>
+
 
 <header>
   <h1>Brazil Pure</h1>
   <div>Sponsor: <span id="sponsor">---</span></div>
 </header>
-
-<div class="container" style="display:none;" id="mainContent">
-  <div class="info-line">
-    <div><strong>Meu Endereço TRX:</strong> <span id="addressId">---</span></div>
-    <div><strong>Data de Ingresso:</strong> <span id="joined">---</span></div>
+  <div class="indicacao">
     <div><strong>Link de Indicação:</strong> <span id="promoLink">---</span></div>
-    <div><strong>Depósitos da Equipe:</strong> <span id="teamDeposits">---</span></div>
-    <div><strong>Indicações:</strong> <span id="referrals">---</span></div>
+
   </div>
+
+	<div class="container" style="" id="mainContent">
+		<div class="info-line">
+		<div><strong>Endereço TRX:</strong> <span id="addressId">---</span></div>
+		<div><strong>Cadastro:</strong> <span id="joined">---</span></div>
+		<div><strong>Indicações:</strong> <span id="referrals">---</span></div>
+		<div>
+		  <strong>Depósitos da Equipe:</strong> <span id="teamDeposits">---</span>
+		  <button onclick="abrirModal()" style="margin-left: 10px; background:#1e3a8a; color:white; border:none; padding:4px 10px; border-radius:5px; cursor:pointer;">Ver</button>
+		</div>
+  	</div>
+		
+		<div style="margin: 20px 0;">
+  <button onclick="abrirDeposito()" style="padding: 10px 20px; background-color: #1e3a8a; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    Fazer Depósito
+  </button>
+</div>
 
   <div class="cards">
     <div class="card">
@@ -176,10 +199,93 @@
   </div>
 
   <footer>
-    Brazil Pure – Simulação acadêmica baseada em dados reais do site pure3.cloud © 2025
+    Brazil Pure © 2025
   </footer>
 </div>
 
+<!-- Modal -->
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:white; border-radius:10px; max-width:500px; width:90%; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.3); position:relative;">
+    <h3 style="margin-top:0; color:#1e3a8a;">Depósitos da Equipe</h3>
+    <div id="conteudoModal" style="font-size:14px;">Carregando...</div>
+    <button onclick="fecharModal()" style="position:absolute; top:10px; right:10px; border:none; background:none; font-size:16px; cursor:pointer;">✖</button>
+  </div>
+</div>
+	
+	<script>
+function abrirModal() {
+  const wallet = localStorage.getItem("wallet_trx");
+  if (!wallet) return alert("Carteira não encontrada.");
+
+  document.getElementById("modal").style.display = "flex";
+  const conteudo = document.getElementById("conteudoModal");
+  conteudo.innerHTML = "Carregando...";
+
+  fetch("/api/relatorio?wallet=" + wallet)
+    .then(res => res.json())
+    .then(d => {
+      if (!d.deposits || d.deposits.length === 0) {
+        conteudo.innerHTML = "<p>Nenhum depósito encontrado.</p>";
+      } else {
+        conteudo.innerHTML = "<ul>" + d.deposits.map(dep => `<li>${dep}</li>`).join("") + "</ul>";
+      }
+    })
+    .catch(() => {
+      conteudo.innerHTML = "<p>Erro ao buscar dados.</p>";
+    });
+}
+
+function fecharModal() {
+  document.getElementById("modal").style.display = "none";
+}
+</script>
+	
+	<!-- Modal de Depósito -->
+<div id="modalDeposito" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:10px; width:90%; max-width:500px; position:relative;">
+    <h3 style="margin-top:0; color:#1e3a8a;">Deposite TRX na Carteira</h3>
+    <p><strong>Endereço:</strong> <span id="depositAddress">Carregando...</span></p>
+    <p><strong>Validade:</strong> <span id="depositTimer">--</span></p>
+    <p><em id="depositMinInfo">--</em></p>
+    <button onclick="fecharDeposito()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+  </div>
+</div>
+	<script>
+function abrirDeposito() {
+  const wallet = localStorage.getItem("wallet_trx");
+  if (!wallet) {
+    alert("Carteira não encontrada.");
+    return;
+  }
+
+  document.getElementById("modalDeposito").style.display = "flex";
+  document.getElementById("depositAddress").innerText = "Carregando...";
+  document.getElementById("depositTimer").innerText = "--";
+  document.getElementById("depositMinInfo").innerText = "--";
+
+  fetch("/api/deposit_address?wallet=" + wallet)
+    .then(res => res.json())
+    .then(d => {
+      if (d.error) {
+        alert("Erro ao buscar endereço de depósito.");
+        fecharDeposito();
+        return;
+      }
+      document.getElementById("depositAddress").innerText = d.address || "Não encontrado";
+      document.getElementById("depositTimer").innerText = d.timer || "--";
+      document.getElementById("depositMinInfo").innerText = d.min_start || "--";
+    })
+    .catch(() => {
+      alert("Erro ao buscar dados.");
+      fecharDeposito();
+    });
+}
+
+function fecharDeposito() {
+  document.getElementById("modalDeposito").style.display = "none";
+}
+</script>
+	
 <script>
 const wallet = localStorage.getItem("wallet_trx");
 if (!wallet) {
@@ -222,6 +328,5 @@ fetch("/api/relatorio?wallet=" + wallet)
     document.getElementById("mainContent").style.display = "block";
   });
 </script>
-
 </body>
 </html>
