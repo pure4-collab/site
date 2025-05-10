@@ -89,3 +89,18 @@ def gerar_endereco_deposito():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+def get_formatted_items(selector):
+    items = soup.select(selector)
+    result = []
+    for i in items:
+        trx_text = i.select_one("span").text if i.select_one("span") else ""
+        a_tag = i.select_one("a")
+        if a_tag:
+            link = a_tag.get("href")
+            hash_text = a_tag.text
+            full = i.text.split("-")[0].strip()  # ex: "May 08, 10:10"
+            result.append(f'<p>{full} - Payment made: <span>{trx_text}</span> - <a href="{link}" target="_blank">{hash_text}</a></p>')
+        else:
+            result.append(f'<p>{i.text}</p>')
+    return result
