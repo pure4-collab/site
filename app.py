@@ -33,7 +33,7 @@ def api_relatorio():
             return [i.get_text(strip=True) for i in items] if items else []
 
         data = {
-            "address_id": get_text(".left p span"),  # My Address ID
+            "address_id": get_text(".left p:nth-of-type(2)")  # My Address ID
             "joined_date": get_text(".joined span"),  # Joined
             "promo_link": get_text("#copyLink"),  # My Promo-Link
             "team_deposits": get_text(".team span"),  # Team Deposits
