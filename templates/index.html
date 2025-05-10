@@ -136,20 +136,17 @@
 </div>
 
 <div class="cards" id="cards-container">
-  <div class="card">
-    <h3>Balanço de Mineração</h3>
+   <div class="card">
+    <h3>Mining Balance</h3>
     <p id="miningBalance">---</p>
-    <p style="font-size:13px;">Duração do plano: Vitalicio</p>
   </div>
   <div class="card">
-    <h3>Saldo atual</h3>
+    <h3>Current Balance</h3>
     <p id="currentBalance">---</p>
-    <p style="font-size:13px;">Pagamento automatico 24h!</p>
   </div>
   <div class="card">
-    <h3>Pagamentos</h3>
-    <p id="total_payouts">---</p>
-    <p style="font-size:13px;">Recompensas de referência: <span id="refRewards">---</span></p>
+    <h3>Payouts</h3>
+    <p id="totalPayouts">---</p>
   </div>
 </div>
 
@@ -189,7 +186,21 @@ window.onload = () => {
     });
 }
 </script>
+<script>
+const wallet = localStorage.getItem("wallet_trx");
+if (!wallet) return;
 
+fetch("/api/relatorio?wallet=" + wallet)
+  .then(res => res.json())
+  .then(d => {
+    document.getElementById("currentBalance").innerText = d.current_balance || "---";
+    document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
+    document.getElementById("miningBalance").innerText = d.mining_balance || "---";
+  })
+  .catch(() => {
+    console.error("Erro ao buscar dados.");
+  });
+</script>
 
 </body>
 </html>
