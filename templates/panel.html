@@ -294,7 +294,6 @@ fetch("/api/relatorio?wallet=" + wallet)
     document.getElementById("teamDeposits").innerText = d.team_deposits || "---";
     document.getElementById("referrals").innerText = d.referrals || "---";
     document.getElementById("sponsor").innerText = d.sponsor || "---";
-
     document.getElementById("miningBalance").innerText = d.mining_balance || "---";
     document.getElementById("currentBalance").innerText = d.current_balance || "---";
     document.getElementById("dailyRoi").innerText = d.daily_roi || "";
@@ -303,16 +302,23 @@ fetch("/api/relatorio?wallet=" + wallet)
     document.getElementById("payoutQueue").innerText = d.payout_queue || "";
 
     (d.deposits || []).forEach(item => {
-      const li = document.createElement("li");
-      li.innerText = item;
-      document.getElementById("depositsList").innerHTML = (d.deposits || []).join("");
-    });
+      const depList = document.getElementById("depositsList");
+depList.innerHTML = "";  // limpa antes
+(d.deposits || []).forEach(html => {
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;          // injeta o <p> inteiro
+  depList.appendChild(wrapper.firstChild);
+});
+
 
     (d.withdrawals || []).forEach(item => {
-      const li = document.createElement("li");
-      li.innerText = item;
-      document.getElementById("withdrawalsList").appendChild(li);
-    });
+      const witList = document.getElementById("withdrawalsList");
+witList.innerHTML = "";
+(d.withdrawals || []).forEach(html => {
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+  witList.appendChild(wrapper.firstChild);
+});
 
     document.getElementById("loader").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
