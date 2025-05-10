@@ -6,25 +6,66 @@
   <title>Brazil Pure - Painel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f3f4f6; color: #111827; }
+    :root {
+      --primary: #1e3a8a;
+      --accent: #facc15;
+      --light: #f9fafb;
+      --text: #1f2937;
+      --bg-card: #ffffff;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: var(--light);
+      color: var(--text);
+    }
+
     header {
-      background: #1e3a8a; color: white;
+      background: var(--primary);
+      color: white;
       padding: 20px 30px;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
     }
-    header h1 { margin: 0; font-size: 22px; }
-    .container { max-width: 1200px; margin: auto; padding: 20px; }
 
-    .info-top, .cards, .history { margin-bottom: 30px; }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .info-top, .cards, .history {
+      margin-bottom: 30px;
+    }
+
     .info-top {
-      background: white; padding: 20px; border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      display: flex; flex-wrap: wrap; gap: 20px;
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
       justify-content: space-between;
     }
-    .info-item { flex: 1 1 250px; font-size: 14px; }
-    .info-item span { font-weight: bold; }
+
+    .info-item {
+      flex: 1 1 250px;
+      font-size: 14px;
+    }
+
+    .info-item span {
+      font-weight: bold;
+      color: var(--primary);
+    }
 
     .cards {
       display: flex;
@@ -32,39 +73,56 @@
       gap: 20px;
       justify-content: space-between;
     }
+
     .card {
       flex: 1 1 300px;
-      background: white;
+      background: var(--bg-card);
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-radius: 16px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      border: 1px solid #e5e7eb;
     }
-    .card h3 { margin-top: 0; font-size: 18px; color: #2563eb; }
-    .card p { margin: 8px 0; }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    .card p {
+      margin: 8px 0;
+    }
 
     .history-block {
-      background: white;
+      background: var(--bg-card);
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
       margin-bottom: 20px;
     }
+
     .history-block h4 {
       margin: 0 0 10px;
-      color: #1e3a8a;
+      color: var(--primary);
     }
+
     .history-block ul {
-      margin: 0; padding-left: 18px;
+      margin: 0;
+      padding-left: 18px;
       font-size: 14px;
     }
+
     footer {
       text-align: center;
       color: #6b7280;
       font-size: 13px;
       padding: 40px 20px 20px;
     }
+
     @media (max-width: 768px) {
-      .cards, .info-top { flex-direction: column; }
+      .cards, .info-top {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -77,45 +135,45 @@
 
 <div class="container">
   <div class="info-top">
-    <div class="info-item"><span>My Address ID:</span> <span id="addressId">---</span></div>
-    <div class="info-item"><span>Joined:</span> <span id="joined">---</span></div>
-    <div class="info-item"><span>Promo-Link:</span> <span id="promoLink">---</span></div>
-    <div class="info-item"><span>Team Deposits:</span> <span id="teamDeposits">---</span></div>
-    <div class="info-item"><span>Referrals:</span> <span id="referrals">---</span></div>
+    <div class="info-item"><span>Meu Endereço TRX:</span> <span id="addressId">---</span></div>
+    <div class="info-item"><span>Data de Ingresso:</span> <span id="joined">---</span></div>
+    <div class="info-item"><span>Link de Indicação:</span> <span id="promoLink">---</span></div>
+    <div class="info-item"><span>Depósitos da Equipe:</span> <span id="teamDeposits">---</span></div>
+    <div class="info-item"><span>Indicações:</span> <span id="referrals">---</span></div>
   </div>
 
   <div class="cards">
     <div class="card">
-      <h3>Mining Balance</h3>
+      <h3>Saldo de Mineração</h3>
       <p id="miningBalance">---</p>
     </div>
     <div class="card">
-      <h3>Current Balance</h3>
+      <h3>Saldo Atual</h3>
       <p id="currentBalance">---</p>
       <p id="dailyRoi" style="font-weight:normal;"></p>
       <p id="refRewards" style="font-weight:normal;"></p>
     </div>
     <div class="card">
-      <h3>Payouts</h3>
-      <p id="totalPayouts">---</p>
+      <h3>Pagamentos</h3>
+      <p id="totalPagamentos">---</p>
       <p id="payoutQueue" style="font-weight:normal;"></p>
     </div>
   </div>
 
   <div class="history">
     <div class="history-block">
-      <h4>My Deposits</h4>
+      <h4>Meus Depósitos</h4>
       <ul id="depositsList"></ul>
     </div>
     <div class="history-block">
-      <h4>My Withdrawals</h4>
+      <h4>Meus Saques</h4>
       <ul id="withdrawalsList"></ul>
     </div>
   </div>
 </div>
 
 <footer>
-  Brazil Pure – Projeto educacional baseado em dados reais da pure3.cloud © 2025
+  Brazil Pure – Simulação baseada em dados reais da pure3.cloud © 2025
 </footer>
 
 <script>
@@ -139,7 +197,7 @@ fetch("/api/relatorio?wallet=" + wallet)
     document.getElementById("currentBalance").innerText = d.current_balance || "---";
     document.getElementById("dailyRoi").innerText = d.daily_roi || "";
     document.getElementById("refRewards").innerText = d.ref_rewards || "";
-    document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
+    document.getElementById("totalPagamentos").innerText = d.total_payouts || "---";
     document.getElementById("payoutQueue").innerText = d.payout_queue || "";
 
     (d.deposits || []).forEach(item => {
