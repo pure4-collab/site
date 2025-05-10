@@ -27,45 +27,16 @@ def api_relatorio():
         def get_text(selector):
             tag = soup.select_one(selector)
             return tag.get_text(strip=True) if tag else None
-
-        def get_formatted_items(selector, label):
-            items = soup.select(selector)
-            result = []
-            for el in items:
-                text = el.get_text(" ", strip=True)
-                # Extrai data antes do primeiro " - "
-                parts = text.split(" - ", 1)
-                date_part = parts[0]
-                rest = parts[1] if len(parts) > 1 else ""
-                # Extrai valor TRX
-                span = el.select_one("span")
-                trx = span.get_text(strip=True) if span else ""
-                # Extrai USD
-                usd_match = re.search(r"/\s*(\$[\d\.]+)", rest)
-                usd = usd_match.group(1) if usd_match else ""
-                # Verifica link de tx
-                a = el.select_one("a")
-                if a:
-                    link = a["href"]
-                    hash_text = a.get_text(strip=True)
-                    # Monta linha com link
-                    html = (
-                        f'<p>{date_part} - {label}: '
-                        f'<span>{trx}</span> / {usd} - '
-                        f'<a href="{link}" target="_blank">{hash_text}</a></p>'
-                    )
-                else:
-                    # Status (ex: "In queue")
-                    status = rest.split(" - ")[-1]
-                    html = (
-                        f'<p>{date_part} - {label}: '
-                        f'<span>{trx}</span> / {usd} - {status}</p>'
-                    )
-                result.append(html)
-            return result
-
+            
+        def get_address_id():
+            p = soup.select_one(".top-block .left p")
+            if not p: return None
+            txt = p.get_text(strip=True)
+            parts = txt.split(":",1)
+            return parts[1].strip() if len(parts)>1 else None
+            
         data = {
-            "address_id":     get_text(".left p:nth-of-type(2)"),
+            "address_id":     get_address_id(),
             "joined_date":    get_text(".joined span"),
             "promo_link":     get_text("#copyLink"),
             "team_deposits":  get_text(".team span"),
@@ -83,7 +54,6 @@ def api_relatorio():
         }
 
         return jsonify(data)
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
