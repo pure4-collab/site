@@ -20,21 +20,30 @@ def api_relatorio():
         return jsonify({"error": "Carteira não fornecida"}), 400
 
     try:
-        url = f"https://pure3.cloud/report/{wallet}"
-        r = requests.get(url, timeout=10)
+        url  = f"https://pure3.cloud/report/{wallet}"
+        r    = requests.get(url, timeout=10)
         soup = BeautifulSoup(r.text, "html.parser")
 
+        # Extrai texto simples de um seletor CSS
         def get_text(selector):
             tag = soup.select_one(selector)
             return tag.get_text(strip=True) if tag else None
-            
+
+        # Extrai apenas o ID após "My Address ID:"
         def get_address_id():
             p = soup.select_one(".top-block .left p")
-            if not p: return None
-            txt = p.get_text(strip=True)
-            parts = txt.split(":",1)
-            return parts[1].strip() if len(parts)>1 else None
-            
+            if not p:
+                return None
+            txt = p.get_text(strip=True)           # "My Address ID:TRT***7KJ"
+            parts = txt.split(":", 1)
+            return parts[1].strip() if len(parts) > 1 else None
+
+        # Retorna o HTML bruto de cada <p> (depósitos ou saques)
+        def get_formatted_items(selector):
+            items = soup.select(selector)
+            return [str(i) for i in items]
+
+        # Monta o dict de saída
         data = {
             "address_id":     get_address_id(),
             "joined_date":    get_text(".joined span"),
@@ -48,14 +57,16 @@ def api_relatorio():
             "ref_rewards":    get_text(".rewards"),
             "total_payouts":  get_text(".block:nth-child(3) .summ.text-r"),
             "payout_queue":   get_text(".block:nth-child(3) .bottom-block span"),
-            "deposits":       get_formatted_items(".left .list p", "Deposited"),
-            "withdrawals":    get_formatted_items(".right .list p", "Payment made"),
+            "deposits":       get_formatted_items(".left .list p"),
+            "withdrawals":    get_formatted_items(".right .list p"),
             "source":         url
         }
 
         return jsonify(data)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/deposit_address")
 def gerar_endereco_deposito():
