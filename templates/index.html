@@ -3,130 +3,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Painel Pure3 Estilo Oficial</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anderson Pure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="PURE3.cloud_files/style.css">
   <style>
-    body {
-      background-color: #111;
-      color: #eee;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #1c1c1c;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      color: #58a6ff;
-      border-bottom: 1px solid #2c2c2c;
-    }
-    .container {
-      max-width: 900px;
+    body { background: #0f0f0f; color: #ccc; font-family: 'Segoe UI', sans-serif; }
+    .painel-dinamico {
+      max-width: 1000px;
       margin: 30px auto;
-      padding: 20px;
       background: #181818;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 10px;
     }
-    .wallet-input {
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #333;
+    .painel-dinamico input {
+      width: 300px;
+      padding: 10px;
       background: #222;
       color: #fff;
+      border: 1px solid #333;
+      border-radius: 5px;
+      margin-right: 10px;
     }
-    button {
-      background: #2e8b57;
-      border: none;
-      color: white;
+    .painel-dinamico button {
       padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 6px;
     }
-    button:hover {
-      background: #3fa36c;
+    .painel-dinamico .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
     }
-    .block {
-      background: #222;
-      padding: 15px 20px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      border-left: 4px solid #58a6ff;
+    .painel-dinamico .card {
+      flex: 1 1 30%;
+      background: #202020;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      color: #fff;
     }
-    .block h2 {
-      color: #58a6ff;
+    .painel-dinamico .card h3 {
       margin: 0 0 10px;
-      font-size: 18px;
-    }
-    .block p {
-      margin: 5px 0;
-      font-size: 16px;
-    }
-    a {
-      color: #58a6ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
+      color: #4ac1ff;
     }
     footer {
+      margin: 50px auto 20px;
       text-align: center;
       color: #777;
       font-size: 14px;
-      margin: 40px 0 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    Painel de Relatório Simulado - Estilo Pure3
-  </header>
 
-  <div class="container">
-    <div class="wallet-input">
-      <input type="text" id="walletInput" placeholder="Digite seu endereço TRX (ex: TRTKNrgEij...)"/>
-      <button onclick="buscar()">Buscar</button>
-    </div>
-
-    <div id="resultado">
-      <!-- Dados aparecerão aqui -->
-    </div>
+<header class="header">
+  <div class="wrap">
+    <h1 style="color:#58a6ff;">Anderson Pure</h1>
+    <p>Simulação de painel com visual idêntico ao Pure3</p>
   </div>
+</header>
 
-  <footer>Projeto Acadêmico &copy; 2025 - Simulação de Interface Pure3</footer>
+<div class="painel-dinamico">
+  <div>
+    <input type="text" id="walletInput" placeholder="Digite seu endereço TRX..." />
+    <button onclick="buscar()">Buscar</button>
+  </div>
+  <div class="cards" id="dadosPainel">
+    <!-- Dados inseridos via JS -->
+  </div>
+</div>
 
-  <script>
-    function buscar() {
-      const wallet = document.getElementById("walletInput").value;
-      const div = document.getElementById("resultado");
-      div.innerHTML = "<p>Buscando dados...</p>";
-      fetch("/api/relatorio?wallet=" + wallet)
-        .then(r => r.json())
-        .then(d => {
-          if (d.error) {
-            div.innerHTML = "<p style='color:red'>Erro: " + d.error + "</p>";
-          } else {
-            div.innerHTML = `
-              <div class="block"><h2>Current Balance</h2><p>${d.current_balance || 'Não disponível'}</p></div>
-              <div class="block"><h2>ROI Hoje</h2><p>${d.daily_roi || 'Não disponível'}</p></div>
-              <div class="block"><h2>Ref Rewards</h2><p>${d.ref_rewards || 'Não disponível'}</p></div>
-              <div class="block"><h2>Total de Payouts</h2><p>${d.total_payouts || 'Não disponível'}</p></div>
-              <div class="block"><h2>Origem</h2><p><a href="${d.source}" target="_blank">Ver página original</a></p></div>
-            `;
-          }
-        })
-        .catch(err => {
-          div.innerHTML = "<p style='color:red'>Erro ao buscar: " + err.message + "</p>";
-        });
-    }
-  </script>
+<footer>
+  Projeto acadêmico - Todos os dados são fictícios e usados para simulação © 2025
+</footer>
+
+<script>
+  function buscar() {
+    const wallet = document.getElementById("walletInput").value;
+    const div = document.getElementById("dadosPainel");
+    div.innerHTML = "<p style='color:#999'>Carregando dados...</p>";
+
+    fetch("/api/relatorio?wallet=" + wallet)
+      .then(res => res.json())
+      .then(d => {
+        if (d.error) {
+          div.innerHTML = "<p style='color:red;'>Erro: " + d.error + "</p>";
+        } else {
+          div.innerHTML = `
+            <div class="card"><h3>Current Balance</h3><p>${d.current_balance || '---'}</p></div>
+            <div class="card"><h3>ROI Hoje</h3><p>${d.daily_roi || '---'}</p></div>
+            <div class="card"><h3>Ref Rewards</h3><p>${d.ref_rewards || '---'}</p></div>
+            <div class="card"><h3>Total de Payouts</h3><p>${d.total_payouts || '---'}</p></div>
+            <div class="card"><h3>Ver Página Original</h3><p><a style="color:#4ac1ff;" href="${d.source}" target="_blank">Clique aqui</a></p></div>
+          `;
+        }
+      })
+      .catch(err => {
+        div.innerHTML = "<p style='color:red;'>Erro ao buscar: " + err.message + "</p>";
+      });
+  }
+</script>
+
 </body>
 </html>
