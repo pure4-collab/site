@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <title>Brazil Pure - Painel</title>
@@ -8,17 +8,15 @@
   <style>
     :root {
       --primary: #1e3a8a;
-      --accent: #facc15;
-      --light: #f9fafb;
-      --text: #1f2937;
-      --bg-card: #ffffff;
+      --light: #ffffff;
+      --background: #f3f4f6;
     }
 
     body {
       font-family: 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: #111827;
       margin: 0;
-      background: var(--light);
-      color: var(--text);
     }
 
     header {
@@ -32,95 +30,99 @@
     }
 
     header h1 {
+      font-size: 20px;
       margin: 0;
-      font-size: 22px;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: auto;
       padding: 20px;
     }
 
-    .info-top, .cards, .history {
-      margin-bottom: 30px;
-    }
-
-    .info-top {
-      background: var(--bg-card);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    .info-line {
+      background: var(--light);
+      padding: 15px 20px;
+      border-radius: 10px;
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
       justify-content: space-between;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
     }
 
-    .info-item {
-      flex: 1 1 250px;
-      font-size: 14px;
-    }
-
-    .info-item span {
-      font-weight: bold;
-      color: var(--primary);
+    .info-line div {
+      margin: 5px 0;
     }
 
     .cards {
       display: flex;
-      flex-wrap: wrap;
       gap: 20px;
-      justify-content: space-between;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
     }
 
     .card {
-      flex: 1 1 300px;
-      background: var(--bg-card);
+      flex: 1 1 30%;
+      background: var(--light);
       padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
-      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
     }
 
     .card h3 {
+      color: var(--primary);
       margin-top: 0;
-      font-size: 18px;
-      color: var(--accent);
     }
 
-    .card p {
-      margin: 8px 0;
+    .dual-history {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    .history-block {
-      background: var(--bg-card);
-      padding: 20px;
+    .history {
+      flex: 1 1 48%;
+      background: var(--light);
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-      margin-bottom: 20px;
+      padding: 20px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
     }
 
-    .history-block h4 {
-      margin: 0 0 10px;
+    .history h4 {
+      margin-top: 0;
       color: var(--primary);
     }
 
-    .history-block ul {
+    ul {
+      padding-left: 20px;
       margin: 0;
-      padding-left: 18px;
       font-size: 14px;
+    }
+
+    .loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: white;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      color: var(--primary);
     }
 
     footer {
       text-align: center;
-      color: #6b7280;
       font-size: 13px;
-      padding: 40px 20px 20px;
+      color: #6b7280;
+      margin-top: 40px;
+      padding-bottom: 20px;
     }
 
     @media (max-width: 768px) {
-      .cards, .info-top {
+      .cards, .dual-history {
         flex-direction: column;
       }
     }
@@ -128,18 +130,20 @@
 </head>
 <body>
 
+<div class="loader" id="loader">Carregando dados da blockchain...</div>
+
 <header>
   <h1>Brazil Pure</h1>
   <div>Sponsor: <span id="sponsor">---</span></div>
 </header>
 
-<div class="container">
-  <div class="info-top">
-    <div class="info-item"><span>Meu Endereço TRX:</span> <span id="addressId">---</span></div>
-    <div class="info-item"><span>Data de Ingresso:</span> <span id="joined">---</span></div>
-    <div class="info-item"><span>Link de Indicação:</span> <span id="promoLink">---</span></div>
-    <div class="info-item"><span>Depósitos da Equipe:</span> <span id="teamDeposits">---</span></div>
-    <div class="info-item"><span>Indicações:</span> <span id="referrals">---</span></div>
+<div class="container" style="display:none;" id="mainContent">
+  <div class="info-line">
+    <div><strong>Meu Endereço TRX:</strong> <span id="addressId">---</span></div>
+    <div><strong>Data de Ingresso:</strong> <span id="joined">---</span></div>
+    <div><strong>Link de Indicação:</strong> <span id="promoLink">---</span></div>
+    <div><strong>Depósitos da Equipe:</strong> <span id="teamDeposits">---</span></div>
+    <div><strong>Indicações:</strong> <span id="referrals">---</span></div>
   </div>
 
   <div class="cards">
@@ -150,31 +154,31 @@
     <div class="card">
       <h3>Saldo Atual</h3>
       <p id="currentBalance">---</p>
-      <p id="dailyRoi" style="font-weight:normal;"></p>
-      <p id="refRewards" style="font-weight:normal;"></p>
+      <p id="dailyRoi"></p>
+      <p id="refRewards"></p>
     </div>
     <div class="card">
       <h3>Pagamentos</h3>
-      <p id="totalPagamentos">---</p>
-      <p id="payoutQueue" style="font-weight:normal;"></p>
+      <p id="totalPayouts">---</p>
+      <p id="payoutQueue"></p>
     </div>
   </div>
 
-  <div class="history">
-    <div class="history-block">
+  <div class="dual-history">
+    <div class="history">
       <h4>Meus Depósitos</h4>
       <ul id="depositsList"></ul>
     </div>
-    <div class="history-block">
+    <div class="history">
       <h4>Meus Saques</h4>
       <ul id="withdrawalsList"></ul>
     </div>
   </div>
-</div>
 
-<footer>
-  Brazil Pure – Simulação baseada em dados reais da pure3.cloud © 2025
-</footer>
+  <footer>
+    Brazil Pure – Simulação acadêmica baseada em dados reais do site pure3.cloud © 2025
+  </footer>
+</div>
 
 <script>
 const wallet = localStorage.getItem("wallet_trx");
@@ -187,17 +191,19 @@ fetch("/api/relatorio?wallet=" + wallet)
   .then(res => res.json())
   .then(d => {
     if (d.error) return alert("Erro: " + d.error);
+
     document.getElementById("addressId").innerText = d.address_id || "---";
     document.getElementById("joined").innerText = d.joined_date || "---";
     document.getElementById("promoLink").innerText = d.promo_link || "---";
     document.getElementById("teamDeposits").innerText = d.team_deposits || "---";
     document.getElementById("referrals").innerText = d.referrals || "---";
     document.getElementById("sponsor").innerText = d.sponsor || "---";
+
     document.getElementById("miningBalance").innerText = d.mining_balance || "---";
     document.getElementById("currentBalance").innerText = d.current_balance || "---";
     document.getElementById("dailyRoi").innerText = d.daily_roi || "";
     document.getElementById("refRewards").innerText = d.ref_rewards || "";
-    document.getElementById("totalPagamentos").innerText = d.total_payouts || "---";
+    document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
     document.getElementById("payoutQueue").innerText = d.payout_queue || "";
 
     (d.deposits || []).forEach(item => {
@@ -211,6 +217,9 @@ fetch("/api/relatorio?wallet=" + wallet)
       li.innerText = item;
       document.getElementById("withdrawalsList").appendChild(li);
     });
+
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
   });
 </script>
 
