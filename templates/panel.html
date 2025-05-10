@@ -187,15 +187,15 @@
     </div>
   </div>
 
-  <div class="dual-history">
-    	<div class="history">
-  	<h4>Meus Depósitos</h4>
-  	<div id="depositsList"></div>
-	</div>
-    <div class="history">
-      <h4>Meus Saques</h4>
-      <ul id="withdrawalsList"></ul>
-    </div>
+  <div class="history">
+  <h4>Meus Depósitos</h4>
+  <div id="depositsList"></div>
+</div>
+<div class="history">
+  <h4>Meus Saques</h4>
+  <div id="withdrawalsList"></div>
+</div>
+		
   </div>
 
   <footer>
@@ -212,32 +212,22 @@
   </div>
 </div>
 	
-	<script>
-function abrirModal() {
-  const wallet = localStorage.getItem("wallet_trx");
-  if (!wallet) return alert("Carteira não encontrada.");
+<script>
+fetch("/api/relatorio?wallet=" + wallet)
+  .then(res => res.json())
+  .then(d => {
+    // …seu código para outros campos…
 
-  document.getElementById("modal").style.display = "flex";
-  const conteudo = document.getElementById("conteudoModal");
-  conteudo.innerHTML = "Carregando...";
+    // Em vez de criar <li> com innerText, fazemos:
+    document.getElementById("depositsList").innerHTML =
+      (d.deposits || []).join("");
 
-  fetch("/api/relatorio?wallet=" + wallet)
-    .then(res => res.json())
-    .then(d => {
-      if (!d.deposits || d.deposits.length === 0) {
-        conteudo.innerHTML = "<p>Nenhum depósito encontrado.</p>";
-      } else {
-        conteudo.innerHTML = "<ul>" + d.deposits.map(dep => `<li>${dep}</li>`).join("") + "</ul>";
-      }
-    })
-    .catch(() => {
-      conteudo.innerHTML = "<p>Erro ao buscar dados.</p>";
-    });
-}
+    document.getElementById("withdrawalsList").innerHTML =
+      (d.withdrawals || []).join("");
 
-function fecharModal() {
-  document.getElementById("modal").style.display = "none";
-}
+    // Esconde loader, mostra conteúdo…
+  })
+  .catch(/* … */);
 </script>
 	
 	<!-- Modal de Depósito -->
