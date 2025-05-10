@@ -45,8 +45,8 @@ def api_relatorio():
             "ref_rewards": get_text(".rewards"),  # Ref Rewards
             "total_payouts": get_text(".block:nth-child(3) .summ.text-r"),  # Payouts
             "payout_queue": get_text(".block:nth-child(3) .bottom-block span"),  # queue
-            "deposits": get_list_items(".left .list p"),  # My Deposits
-            "withdrawals": get_list_items(".right .list p"),  # My Withdrawals
+            "deposits": get_formatted_items(".left .list p"),
+            "withdrawals": get_formatted_items(".right .list p"),
             "source": url
         }
         return jsonify(data)
