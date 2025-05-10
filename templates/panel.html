@@ -188,10 +188,10 @@
   </div>
 
   <div class="dual-history">
-    <div class="history">
-      <h4>Meus Depósitos</h4>
-      <ul id="depositsList"></ul>
-    </div>
+    	<div class="history">
+  	<h4>Meus Depósitos</h4>
+  	<div id="depositsList"></div>
+	</div>
     <div class="history">
       <h4>Meus Saques</h4>
       <ul id="withdrawalsList"></ul>
@@ -315,7 +315,7 @@ fetch("/api/relatorio?wallet=" + wallet)
     (d.deposits || []).forEach(item => {
       const li = document.createElement("li");
       li.innerText = item;
-      document.getElementById("depositsList").appendChild(li);
+      document.getElementById("depositsList").innerHTML = (d.deposits || []).join("");
     });
 
     (d.withdrawals || []).forEach(item => {
