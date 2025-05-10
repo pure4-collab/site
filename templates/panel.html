@@ -117,6 +117,24 @@
 <footer>
   Official domains: brazilpure.cloud | Days Paying: 131 | Server time: May 10, 06:24 UTC | TRX/USD Rate: 0.2602
 </footer>
+<script>
+const wallet = localStorage.getItem("wallet_trx");
+if (!wallet) {
+  alert("Nenhum endereço TRX encontrado. Retornando à página inicial.");
+  window.location.href = "/";
+}
 
+fetch("/api/relatorio?wallet=" + wallet)
+  .then(res => res.json())
+  .then(d => {
+    if (d.error) {
+      alert("Erro: " + d.error);
+      return;
+    }
+    document.getElementById("currentBalance").innerText = d.current_balance || "---";
+    document.getElementById("payouts").innerText = d.total_payouts || "---";
+    document.getElementById("refRewards").innerText = d.ref_rewards || "---";
+  });
+</script>
 </body>
 </html>
