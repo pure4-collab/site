@@ -33,22 +33,22 @@ def api_relatorio():
             return [i.get_text(strip=True) for i in items] if items else []
 
         data = {
-            "address_id": get_text(".left p:nth-of-type(2)")  # My Address ID
-            "joined_date": get_text(".joined span"),  # Joined
-            "promo_link": get_text("#copyLink"),  # My Promo-Link
-            "team_deposits": get_text(".team span"),  # Team Deposits
-            "referrals": get_text(".ref .num span"),  # Referrals
-            "sponsor": get_text(".sponsor span"),  # Sponsor
-            "mining_balance": get_text(".block:nth-child(1) .summ.text-r"),  # Mining Balance
-            "current_balance": get_text(".block:nth-child(2) .summ.text-r"),  # Current Balance
-            "daily_roi": get_text(".roi"),  # ROI Today
-            "ref_rewards": get_text(".rewards"),  # Ref Rewards
-            "total_payouts": get_text(".block:nth-child(3) .summ.text-r"),  # Payouts
-            "payout_queue": get_text(".block:nth-child(3) .bottom-block span"),  # queue
-            "deposits": get_formatted_items(".left .list p"),
-            "withdrawals": get_formatted_items(".right .list p"),
-            "source": url
-        }
+    "address_id": get_text(".left p:nth-of-type(2)"),  # ✅ Corrigido
+    "joined_date": get_text(".joined span"),
+    "promo_link": get_text("#copyLink"),
+    "team_deposits": get_text(".team span"),
+    "referrals": get_text(".ref .num span"),
+    "sponsor": get_text(".sponsor span"),
+    "mining_balance": get_text(".block:nth-child(1) .summ.text-r"),
+    "current_balance": get_text(".block:nth-child(2) .summ.text-r"),
+    "daily_roi": get_text(".roi"),
+    "ref_rewards": get_text(".rewards"),
+    "total_payouts": get_text(".block:nth-child(3) .summ.text-r"),
+    "payout_queue": get_text(".block:nth-child(3) .bottom-block span"),
+    "deposits": get_formatted_items(".left .list p"),
+    "withdrawals": get_formatted_items(".right .list p"),
+    "source": url
+}
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
