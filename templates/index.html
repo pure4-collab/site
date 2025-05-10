@@ -166,22 +166,6 @@
 
 <script>
 function buscar() {
-  const wallet = document.getElementById("walletInput").value;
-  fetch("/api/relatorio?wallet=" + wallet)
-    .then(res => res.json())
-    .then(d => {
-      if (d.error) {
-        alert("Erro: " + d.error);
-      } else {
-        document.getElementById("currentBalance").innerText = d.current_balance || "---";
-        document.getElementById("payouts").innerText = d.total_payouts || "---";
-        document.getElementById("refRewards").innerText = d.ref_rewards || "---";
-      }
-    });
-}
-</script>
-<script>
-function buscar() {
   const wallet = document.getElementById("walletInput").value.trim();
   if (!wallet) {
     alert("Por favor, insira seu endereço TRX.");
@@ -190,6 +174,21 @@ function buscar() {
   localStorage.setItem("wallet_trx", wallet);
   window.location.href = "/painel";
 }
+
+window.onload = () => {
+  const wallet = localStorage.getItem("wallet_trx");
+  if (!wallet) return;
+
+  fetch("/api/relatorio?wallet=" + wallet)
+    .then(res => res.json())
+    .then(d => {
+      document.getElementById("currentBalance").innerText = d.current_balance || "---";
+      document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
+      document.getElementById("miningBalance").innerText = "1,437.34 TRX"; // valor visual placeholder
+    });
+}
 </script>
+
+
 </body>
 </html>
