@@ -1,0 +1,623 @@
+function cl ($t) {
+	console.log ($t);
+}
+
+function dw ($t) {
+	$("body").append ($t);
+}
+
+function emptyValue (value) {
+	if (value === null) {
+		return true;
+	}
+	else if (value == "null") {
+		return true;
+	}
+	else if (value == undefined) {
+		return true;
+	}
+	else if (value === false) {
+		return true;
+	}
+	else if (typeof value == "undefined") {
+		return true;
+	}
+	else if (value == "undefined") {
+		return true;
+	}
+	else if (typeof value == "object") {
+		return value.length == 0;
+	}
+	else if (typeof value == "null") {
+		return true;
+	}
+	else if (typeof value == "boolean") {
+		return value !== true;
+	}
+	else if (typeof value == "number") {
+		return value == 0;
+	}
+	else if (typeof value == "string") {
+		return value == "";
+	}
+	else if (typeof value == "symbol") {
+		return value == "";
+	}
+	else {
+		return false;
+	}
+}
+
+function isFunction (name) {
+	return (typeof window[name] === "function");
+}
+
+$(document).on ("click", ".copy-item", function (e) {
+	e.preventDefault ();
+
+	var $element = $(this);
+	var mem = "";
+
+	if (! emptyValue ($element.attr ("copy_text"))) {
+		mem = $element.attr ("copy_text");
+	}
+	else if (! emptyValue ($element.attr ("data-copy"))) {
+		mem = $element.attr ("data-copy");
+	}
+	else if (! emptyValue ($element.attr ("value"))) {
+		mem = $element.attr ("value");
+	}
+	else if (! emptyValue ($element.html ())) {
+		mem = $element.html ();
+	}
+	
+	if (! emptyValue (mem)) {
+		const $tempInput = document.createElement ('input');
+		$tempInput.value = mem;
+		document.body.appendChild ($tempInput);
+		$tempInput.select ();
+		document.execCommand ('copy');
+		document.body.removeChild ($tempInput);
+		
+		var $tooltip = $("#tooltip-main").clone ();
+		$("body").append ($tooltip);
+
+		$tooltip.attr ("id", "tooltip");
+		$tooltip.addClass ("tooltip");
+		$tooltip.removeClass ("tooltip-main");
+		$tooltip.css ("left", (e.pageX - $tooltip.outerWidth () / 2) + "px");
+		$tooltip.css ("top", (e.pageY - $tooltip.outerHeight () - 15 - $(window).scrollTop ()) + "px");
+		$tooltip.css ("opacity", "1");
+		$tooltip.fadeIn (250);
+		
+		setTimeout (function () {
+			$tooltip.fadeOut (250, function () {
+				$tooltip.remove ();
+			});
+		}, 2000);
+	}
+});
+
+async function getTronAddress () {
+	var $res = await $.ajax ({
+		url: "/ajax/index.php",
+		method: "POST",
+		data: "endpoint=get_address"
+	});
+	
+cl ($res);
+	
+	return $res;
+}
+
+$(document).on ("click", ".deposit_section.offer", function (e) {
+	e.preventDefault ();
+	
+	var $offer = $(".deposit_section.offer");
+	var $wallet = $(".deposit_section.wallet");
+	var $address = $(".place_for_address");
+	var $qr = $("#place_address_qr");
+	var $copyButton = $("#copy_address_button");
+
+	$offer.hide ();
+//	$wallet.show ();
+	$wallet.css ("display", "flex").css ("justify-content", "space-between").css ("flex-wrap", "wrap");
+	
+	(async () => {
+		var $data = await getTronAddress ();
+
+		if (! emptyValue ($data)) {
+			var $res = JSON.parse ($data);
+
+
+
+			if ($res.status == "success") {
+				if (! emptyValue ($res.wallet)) {
+					$address.html ($res.wallet);
+					$copyButton.attr ("data-copy", $res.wallet);
+					$qr.html ("<img id='address_qr' src='/qr/"+ $res.wallet +"?r="+ Math.random () +"'>");
+					clock ();
+				}
+			}
+			else {
+				$offer.show ();
+				$wallet.hide ();
+			}
+		}
+	}) ();
+});
+
+function checkLang (lang) {
+	var langValid = false;
+	
+	if (! emptyValue (lang)) {
+		if (lang.match (/^[a-z]{2}$/)) {
+			$(".lang_menu").each (function () {
+				var $el = $(this);
+				
+				if ($el.attr ("data-lang") == lang) {
+					langValid = true;
+				}
+			})
+		}
+	}
+	
+	return langValid;
+}
+
+
+$(document).ready (function () {
+
+	var getParams = new URLSearchParams (window.location.search);
+	var langDefault = "en";
+	var langCookie = getCookie ("lang");
+	var langParam = decodeURIComponent (getParams.get ("language"));
+	var myLang = langDefault;
+
+	if (emptyValue (langCookie)) {
+		var uaLang = navigator.language || navigator.userLanguage;
+		uaLang = uaLang.substring (0, 2);
+		
+		if (checkLang (uaLang)) {
+			if (langCookie != uaLang) {
+				setCookie ("lang", uaLang);
+			}
+			
+			myLang = uaLang;
+		}
+	}
+	else {
+		if (checkLang (langCookie)) {
+			myLang = langCookie;
+		}
+	}
+	
+	if (! emptyValue (langParam)) {
+		if (checkLang (langParam)) {
+			if (langParam != langCookie) {
+				setCookie (langParam);
+			}
+			
+			myLang = langParam;
+		}
+	}
+
+/*
+	$body = $(".body");
+
+	$.ajax ({
+		url: "/ajax/index.php",
+		data: "endpoint=trans&html=" + encodeURIComponent ($body.html ()),
+		method: "post",
+		success: function (res) {
+			var $res = JSON.parse (res);
+
+			$body.html ($res.html);
+			$body.show ();
+			subfooter ();
+
+			setTimeout (function () {
+				var getParams = new URLSearchParams (window.location.search);
+				var aff = decodeURIComponent (getParams.get ("aff"));
+				var affCookie = getCookie ("aff");
+				
+				if (! emptyValue (aff)) {
+					if (aff != affCookie) {
+						if (aff.match (/^[a-zA-Z0-9]+$/)) {
+							setCookie ("aff", aff);
+							
+							$(".upline_token").html (aff);
+							
+							$.ajax ({
+								url:"/ajax/index.php",
+								data:"endpoint=click&aff=" + aff,
+								method:"POST",
+							});
+						}
+					}
+				}
+				
+				if (! emptyValue (affCookie)) {
+					$(".upline_token").html (affCookie);
+				}
+				
+				$(".lang_menu").each (function () {
+					var $el = $(this);
+
+					if ($el.attr ("data-lang") == myLang) {
+						$el.remove ();
+					}
+				});
+			}, 0);
+		}
+	});
+*/
+	
+	setTimeout (function () {
+		var getParams = new URLSearchParams (window.location.search);
+		var aff = decodeURIComponent (getParams.get ("aff"));
+		var affCookie = getCookie ("aff");
+		
+		if (! emptyValue (aff)) {
+			if (aff != affCookie) {
+				if (aff.match (/^[a-zA-Z0-9]+$/)) {
+					setCookie ("aff", aff);
+					
+					$(".upline_token").html (aff);
+					
+					$.ajax ({
+						url:"/ajax/index.php",
+						data:"endpoint=click&aff=" + aff,
+						method:"POST",
+					});
+				}
+			}
+		}
+		
+		if (! emptyValue (affCookie)) {
+			$(".upline_token").html (affCookie);
+		}
+		
+		$(".lang_menu").each (function () {
+			var $el = $(this);
+
+			if ($el.attr ("data-lang") == myLang) {
+				$el.remove ();
+			}
+		});
+	}, 0);
+	
+	var dtc = getCookie ("dark_theme");
+	
+	if (dtc == 1) {
+		$("html").addClass ("dark");
+	}
+
+	$("err").each (function () {
+		var $err = $(this);
+		
+		alert ($err.html ());
+	});
+});
+
+$(document).on ("click", ".lang_menu", function (e) {
+//	e.preventDefault ();
+	
+	var $el = $(this);
+	var langCode = $el.attr ("data-lang");
+
+	setCookie ("lang", langCode);
+	
+	var url = window.location.href;
+	var params = new URLSearchParams(url.search);
+	params.set('language', langCode);
+	url.search = params.toString ();
+	
+	window.location.href = url.toString ();
+});
+
+function setCookie(name, value, exp, path) {
+    var expires = "";
+    if (exp) {
+        expires = "; expires=" + exp;
+    } else {
+        var date = new Date();
+        date.setTime(date.getTime() + (3 * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    
+    path = path || "/";
+    
+    if (name) {
+        document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=" + path + "; SameSite=Lax";
+    }
+}
+
+/*
+function setCookie (name, value, exp, path) {
+	if (emptyValue (exp)) {
+		var date = new Date ();
+		date.setTime (date.getTime () + (3 * 24 * 60 * 60 * 1000));
+		exp = date.toUTCString ();
+	}
+	
+	if (emptyValue (path)) {
+		path = "/";
+	}
+	
+	if (! emptyValue (name)) {
+//		document.cookie = name + "=" + value + ";" + "expires=" + exp + ";" + "path=" + path;
+		document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=" + path + "; SameSite=Lax";
+	}
+}
+*/
+
+function dropCookie (name, path) {
+	if (emptyValue (path)) {
+		path = "/";
+	}
+	
+	if (! emptyValue (name)) {
+		var date = new Date ();
+		date.setTime (date.getTime () - (3 * 24 * 60 * 60 * 1000));
+		var exp = date.toUTCString ();
+		
+		setCookie (name, 0, exp, path);
+	}
+}
+
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+$(document).on ("click", "input[name='address']", function (e) {
+	if (e.originalEvent && e.originalEvent.isTrusted) {
+		if (typeof getOffset === "function") {
+			getOffset ();
+		}
+	}
+})
+
+function modal ($obj) {
+	if (! emptyValue ($obj.name)) {
+		
+	}
+}
+
+$(document).on ("click", ".close_modal", function (e) {
+	e.preventDefault ();
+	var $el = $(this);
+	
+	$el.parents (".modal").remove ();
+
+	if (! $(".modal").length) {
+		$("#modal-bg").hide ();
+	}
+});
+
+$(document).on ("click", ".modal", function (e) {
+	if ($(e.target).hasClass ("modal")) {
+		$(".modal").remove ();
+		$("#modal-bg").hide ();
+	}
+})
+
+$(document).on ("click", ".open_modal", function (e) {
+	e.preventDefault ();
+	
+	var $el = $(this);
+	var modalName = $el.attr ("modal");
+	var $tpl = $(".modal_tpl");
+	var $modal;
+	
+	if (! emptyValue (modalName)) {
+		$modal = $tpl.clone ();
+		$modal.removeClass ("modal_tpl");
+		$modal.addClass ("modal");
+
+		$("body").append ($modal);
+		
+		$modal.find (".modal-window").load ("/modal/" + modalName, function () {
+			$("#modal-bg").show ();
+			$modal.show ();
+		});
+	}
+});
+
+$(document).on ("click", ".send_form", function (e) {
+	e.preventDefault ();
+
+	if (e.originalEvent && e.originalEvent.isTrusted) {
+		var $el = $(this);
+		var $form = $el.parents ("form");
+		
+		$.ajax ({
+			url: "/ajax/index.php",
+			method: "post",
+			data: $form.serialize ()
+		})
+		.then ((res) => {
+cl (res);
+			processRes (res);
+		});
+	}
+});
+
+function processRes (res) {
+	try {
+		var $res = JSON.parse (res);
+		
+		if ($res.success == 1) {
+			if (! emptyValue ($res.funcs)) {
+				for (var i in $res.funcs) {
+					var func = $res.funcs[i];
+
+					if (isFunction (func)) {
+						window[func] ();
+					}
+				}
+			}
+		}
+		
+		if ($res.success == 0) {
+			if ($res.e) {
+				if ($res.e.i) {
+					var t = [];
+					
+					for (iter in $res.e.i) {
+						t.push ($res.e.i[iter]);
+					}
+					
+					if (t.length) {
+						$(".err_place").html (t.join ("<br>"));
+						$(".err_place").show ();
+					}
+				}
+			}
+		}
+		
+		if ($res.goto) {
+			window.location.href = $res.goto;
+		}
+	}
+	catch {
+		cl ("Parse failed");
+	}
+}
+
+function supportOK () {
+	$(".modal .modal_body").html ("Your message has been sent. <br><br>Thank you!<br><br> We will address it within 24 hours.");
+	$(".modal_footer.submit").remove ();
+	$(".modal_footer.close").show ();
+}
+
+function clock () {
+	$(".clock").each (function () {
+		var $el = $(this);
+		var clockId;
+		
+		if (emptyValue ($el.attr ("clock-id"))) {
+			clockId = Math.random () * Math.pow (10, 8);
+			$el.attr ("clock-id", clockId);
+		}
+		else {
+			clockId = $el.attr ("clock-id");
+		}
+		
+		clockGo ($el);
+	});
+}
+
+function clockGo ($el) {
+	var clockFrom = parseInt ($el.attr ("clock-from"));
+	var clockTo = parseInt ($el.attr ("clock-to"));
+	var rem, y, d, h, m, s, sec;
+	var goon = true;
+	
+	if (! isNaN (clockFrom) && ! isNaN (clockTo)) {
+		if (clockFrom != clockTo) {
+			rem = clockFrom;
+			sec = (clockTo - clockFrom) / rem;
+		}
+		else {
+			if (clockTo > 0) {
+				rem = clockTo;
+				goon = false;
+			}
+			else if (clockTo <= 0) {
+				rem = 0;
+				goon = false;
+			}
+		}
+		
+		y = (rem / 365 / 24 / 3600) | 0;
+		rem -= y * 365 * 24 * 3600;
+		d = (rem / 24 / 3600) | 0;
+		rem -= d * 24 * 3600;
+		h = (rem / 3600) | 0;
+		rem -= h * 3600;
+		m = (rem / 60) | 0;
+		s = rem % 60;
+		
+		$el.find (".clock-y").html (y >= 10 ? y : "0" + y);
+		$el.find (".clock-d").html (d >= 10 ? d : "0" + d);
+		$el.find (".clock-h").html (h >= 10 ? h : "0" + h);
+		$el.find (".clock-m").html (m >= 10 ? m : "0" + m);
+		$el.find (".clock-s").html (s >= 10 ? s : "0" + s);
+		
+		clockFrom += sec;
+		$el.attr ("clock-from", clockFrom);
+		
+		if (goon === true) {
+			setTimeout (function () {
+				clockGo ($el);
+			}, 1000);
+		}
+	}
+}
+
+$(document).on ("click", ".tabber.pointer", function (e) {
+	e.preventDefault ();
+	
+	var $tab = $(this);
+	var gr = $tab.attr ("tabs");
+	var tab = $tab.attr ("tab");
+	
+	if (! emptyValue (gr) && ! emptyValue (tab)) {
+		$(".tabber.pointer[tabs='"+ gr +"']").removeClass ("active");
+		$tab.addClass ("active");
+		
+		$(".tabber.pointed[tabs='"+ gr +"']").removeClass ("active");
+		$(".tabber.pointed[tabs='"+ gr +"'][tab='"+ tab +"']").addClass ("active");
+	}
+});
+
+$(window).on ("resize", function () {
+	subfooter ();
+});
+
+$(document).on ("click", ".toggler.pointer", function () {
+	var $el = $(this);
+	var id = $el.attr ("toggle");
+	
+	if (! emptyValue (id)) {
+		var $sl = $(".toggler.pointed[toggle='"+ id +"']");
+		
+		if ($el.hasClass ("active")) {
+			$el.removeClass ("active");
+			$sl.removeClass ("active");
+		}
+		else {
+			$el.addClass ("active");
+			$sl.addClass ("active");
+		}
+	}
+});
+
+function subfooter () {
+	$(".subfooter_center").css ("max-width", $(".page-wrapper").css ("max-width"));
+	$(".subfooter_center").css ("padding-left", $(".page-wrapper").css ("padding-left"));
+	$(".subfooter_center").css ("padding-right", $(".page-wrapper").css ("padding-right"));
+}
+
+$(document).on ("click", ".theme_switch", function () {
+	var $html = $("html");
+	
+	if ($html.hasClass ("dark")) {
+		$html.removeClass ("dark");
+		dropCookie ("dark_theme");
+	}
+	else {
+		$html.addClass ("dark");
+		setCookie ("dark_theme", 1);
+	}
+});
+
+$(document).on ("click", ".history_modal_button", function () {
+	$(this).parents (".modal").hide ();
+	$("#modal-bg").hide ();
+});
