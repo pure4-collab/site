@@ -6,48 +6,65 @@
   <title>Brazil Pure - Painel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f9fafb; color: #1f2937; }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f3f4f6; color: #111827; }
     header {
-      background: #1e3a8a;
+      background: #1e3a8a; color: white;
       padding: 20px 30px;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap;
     }
-    header h1 { font-size: 24px; margin: 0; }
-    .section { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-    .top-info { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .top-info div { margin: 10px 0; }
-    .promo { background: #eef2ff; padding: 10px; border-radius: 6px; }
-    .referrals { background: #dbeafe; padding: 8px 12px; border-radius: 5px; font-weight: bold; color: #1e40af; }
-    .highlight { background: #1e40af; color: white; padding: 20px; text-align: center; margin-bottom: 30px; border-radius: 8px; }
-    .highlight button { background: #3b82f6; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; }
-    .cards { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+    header h1 { margin: 0; font-size: 22px; }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
+
+    .info-top, .cards, .history { margin-bottom: 30px; }
+    .info-top {
+      background: white; padding: 20px; border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex; flex-wrap: wrap; gap: 20px;
+      justify-content: space-between;
+    }
+    .info-item { flex: 1 1 250px; font-size: 14px; }
+    .info-item span { font-weight: bold; }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
     .card {
-      flex: 1 1 30%;
+      flex: 1 1 300px;
       background: white;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .card h3 { color: #2563eb; margin: 0 0 10px; }
-    .card p { margin: 5px 0; }
-    .history-tables { display: flex; gap: 30px; flex-wrap: wrap; }
-    .history { flex: 1 1 48%; }
-    .history h4 { margin-bottom: 10px; color: #1e3a8a; }
-    .history table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    .history th, .history td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 8px;
-      text-align: left;
+    .card h3 { margin-top: 0; font-size: 18px; color: #2563eb; }
+    .card p { margin: 8px 0; }
+
+    .history-block {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .history-block h4 {
+      margin: 0 0 10px;
+      color: #1e3a8a;
+    }
+    .history-block ul {
+      margin: 0; padding-left: 18px;
+      font-size: 14px;
     }
     footer {
       text-align: center;
-      margin-top: 50px;
-      padding: 20px;
-      font-size: 13px;
       color: #6b7280;
+      font-size: 13px;
+      padding: 40px 20px 20px;
+    }
+    @media (max-width: 768px) {
+      .cards, .info-top { flex-direction: column; }
     }
   </style>
 </head>
@@ -55,86 +72,89 @@
 
 <header>
   <h1>Brazil Pure</h1>
-  <div>Sponsor: <strong>8G59F4KC</strong></div>
+  <div>Sponsor: <span id="sponsor">---</span></div>
 </header>
 
-<div class="section">
-  <div class="top-info">
-    <div><strong>My Address ID:</strong> TRT***7KJ</div>
-    <div><strong>Joined:</strong> 03/24/2025 <a href="#">Export History</a></div>
-    <div class="promo"><strong>Promo-Link:</strong> https://brazilpure.cloud/?aff=B905E8pG</div>
-    <div class="referrals">Referrals: <span>2</span></div>
-    <div><strong>Team Deposits:</strong> 6,886.07 TRX <a href="#">View</a></div>
-  </div>
-
-  <div class="highlight">
-    <p>Deposit your TRX and Start Earning 3% Daily!</p>
-    <button>Add Deposit</button>
+<div class="container">
+  <div class="info-top">
+    <div class="info-item"><span>My Address ID:</span> <span id="addressId">---</span></div>
+    <div class="info-item"><span>Joined:</span> <span id="joined">---</span></div>
+    <div class="info-item"><span>Promo-Link:</span> <span id="promoLink">---</span></div>
+    <div class="info-item"><span>Team Deposits:</span> <span id="teamDeposits">---</span></div>
+    <div class="info-item"><span>Referrals:</span> <span id="referrals">---</span></div>
   </div>
 
   <div class="cards">
     <div class="card">
       <h3>Mining Balance</h3>
-      <p><strong>1,437.346571 TRX</strong></p>
-      <p>Add funds to increase daily revenue.</p>
-      <p>Plan duration: <strong>Lifetime</strong></p>
+      <p id="miningBalance">---</p>
     </div>
     <div class="card">
       <h3>Current Balance</h3>
-      <p><strong>10.66555 TRX</strong></p>
-      <p>ROI Today: 0 of 43.12 TRX</p>
-      <p>Ref Rewards: 199.367086 TRX</p>
+      <p id="currentBalance">---</p>
+      <p id="dailyRoi" style="font-weight:normal;"></p>
+      <p id="refRewards" style="font-weight:normal;"></p>
     </div>
     <div class="card">
       <h3>Payouts</h3>
-      <p><strong>1,796.842444 TRX</strong></p>
-      <p>1 payouts in queue: 40.735022 TRX</p>
+      <p id="totalPayouts">---</p>
+      <p id="payoutQueue" style="font-weight:normal;"></p>
     </div>
   </div>
 
-  <div class="history-tables">
-    <div class="history">
+  <div class="history">
+    <div class="history-block">
       <h4>My Deposits</h4>
-      <table>
-        <tr><th>Date</th><th>Amount</th><th>Link</th></tr>
-        <tr><td>May 09</td><td>79.512405 TRX</td><td><a href="#">Tx 1</a></td></tr>
-        <tr><td>Apr 21</td><td>29 TRX</td><td><a href="#">Tx 2</a></td></tr>
-        <tr><td>Apr 14</td><td>138.127273 TRX</td><td><a href="#">Tx 3</a></td></tr>
-      </table>
+      <ul id="depositsList"></ul>
     </div>
-    <div class="history">
+    <div class="history-block">
       <h4>My Withdrawals</h4>
-      <table>
-        <tr><th>Date</th><th>Amount</th><th>Status</th></tr>
-        <tr><td>May 09</td><td>40.735022 TRX</td><td>In queue</td></tr>
-        <tr><td>May 08</td><td>40.735022 TRX</td><td>Paid</td></tr>
-        <tr><td>May 07</td><td>31.315177 TRX</td><td>Paid</td></tr>
-      </table>
+      <ul id="withdrawalsList"></ul>
     </div>
   </div>
 </div>
 
 <footer>
-  Official domains: brazilpure.cloud | Days Paying: 131 | Server time: May 10, 06:24 UTC | TRX/USD Rate: 0.2602
+  Brazil Pure – Projeto educacional baseado em dados reais da pure3.cloud © 2025
 </footer>
+
 <script>
 const wallet = localStorage.getItem("wallet_trx");
 if (!wallet) {
-  alert("Carteira TRX não encontrada. Voltando para início.");
+  alert("Carteira TRX não encontrada.");
   window.location.href = "/";
 }
 
 fetch("/api/relatorio?wallet=" + wallet)
   .then(res => res.json())
   .then(d => {
+    if (d.error) return alert("Erro: " + d.error);
+    document.getElementById("addressId").innerText = d.address_id || "---";
+    document.getElementById("joined").innerText = d.joined_date || "---";
+    document.getElementById("promoLink").innerText = d.promo_link || "---";
+    document.getElementById("teamDeposits").innerText = d.team_deposits || "---";
+    document.getElementById("referrals").innerText = d.referrals || "---";
+    document.getElementById("sponsor").innerText = d.sponsor || "---";
+    document.getElementById("miningBalance").innerText = d.mining_balance || "---";
     document.getElementById("currentBalance").innerText = d.current_balance || "---";
+    document.getElementById("dailyRoi").innerText = d.daily_roi || "";
+    document.getElementById("refRewards").innerText = d.ref_rewards || "";
     document.getElementById("totalPayouts").innerText = d.total_payouts || "---";
-    document.getElementById("refRewards").innerText = d.ref_rewards || "---";
-    // Você pode adicionar mais campos se quiser
-  })
-  .catch(() => {
-    alert("Erro ao buscar dados da carteira.");
+    document.getElementById("payoutQueue").innerText = d.payout_queue || "";
+
+    (d.deposits || []).forEach(item => {
+      const li = document.createElement("li");
+      li.innerText = item;
+      document.getElementById("depositsList").appendChild(li);
+    });
+
+    (d.withdrawals || []).forEach(item => {
+      const li = document.createElement("li");
+      li.innerText = item;
+      document.getElementById("withdrawalsList").appendChild(li);
+    });
   });
 </script>
+
 </body>
 </html>
