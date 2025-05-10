@@ -2,57 +2,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel Pure3 Integrado</title>
+  <meta charset="UTF-8" />
+  <title>Painel Pure3 Estilo Oficial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; }
-    header { background: #161b22; padding: 20px; text-align: center; border-bottom: 1px solid #30363d; }
-    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    .section { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-    .section h2 { color: #79c0ff; margin-top: 0; font-size: 18px; }
-    .highlight { color: #3fb950; font-weight: bold; }
-    input[type="text"] { width: 100%; padding: 8px; margin: 5px 0 10px; border: 1px solid #30363d; border-radius: 5px; background: #0d1117; color: #c9d1d9; }
-    button { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    button:hover { background: #2ea043; }
-    .info-block { margin-top: 10px; }
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1c1c1c;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      color: #58a6ff;
+      border-bottom: 1px solid #2c2c2c;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #181818;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    .wallet-input {
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      background: #2e8b57;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button:hover {
+      background: #3fa36c;
+    }
+    .block {
+      background: #222;
+      padding: 15px 20px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #58a6ff;
+    }
+    .block h2 {
+      color: #58a6ff;
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .block p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+      margin: 40px 0 10px;
+    }
   </style>
 </head>
 <body>
-<header><h1>Painel Pure3 com Proxy Flask</h1></header>
-<div class="container">
-  <div class="section">
-    <h2>Buscar dados</h2>
-    <input type="text" id="walletInput" placeholder="Digite seu endereço TRX...">
-    <button onclick="buscarDados()">Buscar</button>
-    <div class="info-block" id="dadosUsuario"></div>
+  <header>
+    Painel de Relatório Simulado - Estilo Pure3
+  </header>
+
+  <div class="container">
+    <div class="wallet-input">
+      <input type="text" id="walletInput" placeholder="Digite seu endereço TRX (ex: TRTKNrgEij...)"/>
+      <button onclick="buscar()">Buscar</button>
+    </div>
+
+    <div id="resultado">
+      <!-- Dados aparecerão aqui -->
+    </div>
   </div>
-</div>
-<footer style="text-align:center; color:#8b949e; padding:20px;">
-  Projeto acadêmico &copy; 2025 — Integrado com Render
-</footer>
-<script>
-function buscarDados() {
-  const wallet = document.getElementById("walletInput").value;
-  const infoDiv = document.getElementById("dadosUsuario");
-  infoDiv.innerHTML = "Buscando...";
-  fetch("/api/relatorio?wallet=" + wallet)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        infoDiv.innerHTML = "<span style='color:red;'>Erro: " + data.error + "</span>";
-      } else {
-        infoDiv.innerHTML = `
-          <p><strong>Current Balance:</strong> <span class="highlight">${data.current_balance}</span></p>
-          <p><strong>ROI Hoje:</strong> <span class="highlight">${data.daily_roi}</span></p>
-          <p><strong>Total de Payouts:</strong> <span class="highlight">${data.total_payouts}</span></p>
-          <p><a href="${data.source}" target="_blank" style="color:#58a6ff;">Ver página original</a></p>
-        `;
-      }
-    })
-    .catch(err => {
-      infoDiv.innerHTML = "<span style='color:red;'>Erro na requisição: " + err.message + "</span>";
-    });
-}
-</script>
+
+  <footer>Projeto Acadêmico &copy; 2025 - Simulação de Interface Pure3</footer>
+
+  <script>
+    function buscar() {
+      const wallet = document.getElementById("walletInput").value;
+      const div = document.getElementById("resultado");
+      div.innerHTML = "<p>Buscando dados...</p>";
+      fetch("/api/relatorio?wallet=" + wallet)
+        .then(r => r.json())
+        .then(d => {
+          if (d.error) {
+            div.innerHTML = "<p style='color:red'>Erro: " + d.error + "</p>";
+          } else {
+            div.innerHTML = `
+              <div class="block"><h2>Current Balance</h2><p>${d.current_balance || 'Não disponível'}</p></div>
+              <div class="block"><h2>ROI Hoje</h2><p>${d.daily_roi || 'Não disponível'}</p></div>
+              <div class="block"><h2>Ref Rewards</h2><p>${d.ref_rewards || 'Não disponível'}</p></div>
+              <div class="block"><h2>Total de Payouts</h2><p>${d.total_payouts || 'Não disponível'}</p></div>
+              <div class="block"><h2>Origem</h2><p><a href="${d.source}" target="_blank">Ver página original</a></p></div>
+            `;
+          }
+        })
+        .catch(err => {
+          div.innerHTML = "<p style='color:red'>Erro ao buscar: " + err.message + "</p>";
+        });
+    }
+  </script>
 </body>
 </html>
