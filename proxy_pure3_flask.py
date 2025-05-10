@@ -1,3 +1,14 @@
+from flask import Flask, request, jsonify, render_template
+import requests
+from bs4 import BeautifulSoup
+import os
+
+app = Flask(__name__)  # <-- ESSA LINHA TEM QUE VIR ANTES DAS ROTAS
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+  
 @app.route('/api/relatorio', methods=['GET'])
 def pegar_dados():
     wallet = request.args.get('wallet')
